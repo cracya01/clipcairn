@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 WORK=$(mktemp -d -t clipcairn-build)
 trap 'rm -rf "$WORK"' EXIT
 APP="$WORK/Clipcairn.app"
-mkdir -p "$APP/Contents/MacOS"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 
 # SQLCipher (vendored amalgamation) with Apple's CommonCrypto as the crypto provider.
 clang -O2 -w -c Vendor/sqlcipher/sqlite3.c -o "$WORK/sqlcipher.o" \
@@ -23,6 +23,7 @@ swiftc -O -swift-version 5 -parse-as-library \
   -o "$APP/Contents/MacOS/Clipcairn"
 
 cp Info.plist "$APP/Contents/"
+cp Resources/AppIcon.icns "$APP/Contents/Resources/"
 # Prefer a stable self-signed identity, so macOS permissions and keychain access survive rebuilds.
 IDENTITY="Local Self-Signed Code Signing"
 if security find-identity -p codesigning | grep -q "\"$IDENTITY\""; then
